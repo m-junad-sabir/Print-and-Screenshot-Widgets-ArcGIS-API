@@ -1,0 +1,81 @@
+<!doctype html>
+
+<html lang="en">
+
+ <head>
+
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>LayerList Widget with Custom Actions (AMD)</title>
+
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.33/esri/themes/light/main.css" />
+
+ </head>
+
+ <body>
+  
+
+
+  <div id="viewDiv" class="esri-widget">
+     <button
+        id="screenshotBtn"
+        class="action-button esri-widget"
+        aria-label="Select screenshot area"
+        title="Select screenshot area">
+        Select screenshot area
+      </button>
+  </div>
+    <!-- The screenshot image and download button will be added here -->
+  <div id="screenshotDiv" class="hide">
+
+      <img class="js-screenshot-image" id="imgOfSS" alt="Screenshot preview" title="Screenshot preview" />
+
+      <div>
+        <label>Set a text to be displayed on the image: </label
+        ><input type="text" placeholder="Image text" id="textInput" autofocus />
+      </div>
+
+      <button
+        id="downloadBtn"
+        class="action-button"
+        aria-label="Download image"
+        title="Download image">
+        Download image
+      </button>
+
+      <button
+        id="closeBtn"
+        class="action-button"
+        aria-label="Back to webscene"
+        title="Back to webscene">
+        Back to webscene
+      </button>
+
+  </div>
+
+   <!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+  <div id="maskDiv" class="hide screenshotCursor"></div>
+
+
+
+  <!-- 1. Load the ArcGIS SDK base script to enable the 'require' AMD function -->
+  <script src="https://js.arcgis.com/4.33/"></script>
+  
+  <!-- 2. Link to the application's JavaScript file. Note: No 'type="module"' is needed for AMD. -->
+  <script src="./main.js"></script>
+
+
+
+
+ </body>
+</html>

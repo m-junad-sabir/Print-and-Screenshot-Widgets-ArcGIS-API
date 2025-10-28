@@ -1,0 +1,71 @@
+html,
+body,
+#viewDiv { 
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  /* top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  position: relative;*/
+  overflow-x: auto;
+  overflow-y: auto;
+}
+/* Custom styles for the actions panel in the LayerList to ensure clean layout */
+.esri-layer-list__panel-content .calcite-label {
+padding: 8px;
+}
+.esri-layer-list__item-actions {
+padding: 4px 8px;
+}
+
+#screenshotDiv {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.hide {
+  display: none;
+}
+
+#imgOfSS {
+  border: 10px solid white;
+  box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.5);
+  
+  
+}
+
+#screenshotDiv > * {
+  margin: 0.5em;
+}
+
+.screenshotCursor {
+  cursor: crosshair;
+}
+
+.action-button {
+  padding: 0.6em;
+  border: 1px solid #0079c1;
+  text-align: center;
+  background-color: white;
+  cursor: pointer;
+}
+
+.action-button:hover,
+.action-button:focus {
+  background: #0079c1;
+  color: white;
+}
+
+#maskDiv {
+  position: absolute;
+  background: rgba(255, 51, 0, 0.1);
+  border: 2px dashed rgb(255, 51, 0);
+}
