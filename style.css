@@ -4,8 +4,8 @@ body,
   padding: 0;
   margin: 0;
   height: 100%;
-  width: 100%;
-  /* top: 0px;
+  /*width: 100%;
+   top: 0px;
   bottom: 0px;
   left: 0px;
   right: 0px;
@@ -13,6 +13,39 @@ body,
   overflow-x: auto;
   overflow-y: auto;
 }
+
+#viewDiv {
+    position: relative;
+    width: 100%;
+    height: 81vh;
+}
+
+#logoimg {
+    width: 4em;
+    height: auto;
+}
+
+#logoDiv {
+    padding: 5px;
+    background-color: white;
+    /*color: pink;*/
+    text-align: center;
+    width: 69px;
+    margin-top: 0px;
+    height: auto;
+    padding-bottom: 1px;
+}
+
+
+#header {
+    height: 19vh;
+}
+
+#imgofheader {
+    height: initial;
+    width: 100%;
+}
+
 /* Custom styles for the actions panel in the LayerList to ensure clean layout */
 .esri-layer-list__panel-content .calcite-label {
 padding: 8px;

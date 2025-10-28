@@ -11,7 +11,9 @@ require([
  "esri/widgets/Print",
  "esri/widgets/Expand",
  "esri/widgets/ScaleBar",
- "esri/widgets/Compass"
+ "esri/widgets/Compass",
+ "esri/Basemap",
+ "esri/widgets/BasemapGallery"
 ], function(
  Map,
  MapView,
@@ -25,7 +27,9 @@ require([
  Print,
  Expand,
  ScaleBar,
- Compass
+ Compass,
+ Basemap,
+ BasemapGallery
 ) {
 
 
@@ -115,6 +119,20 @@ require([
   center: [-98.5795, 39.8282],
   zoom: 4
  });
+
+ view.ui.add("logoDiv", "bottom-right");
+
+ const basemapGallery = new BasemapGallery({
+      view: view
+  });
+
+  let expandBG = new Expand({
+    view: view,
+    content: basemapGallery,
+    expandIcon: "basemap",
+    group: "bottom-right"
+  });
+  view.ui.add(expandBG, "bottom-right");
 
  // the button that triggers area selection mode
  const screenshotBtn = document.getElementById("screenshotBtn");
@@ -252,13 +270,13 @@ require([
   printServiceUrl: "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
  });
 
- const expand = new Expand({
+ const expandP = new Expand({
   view: view,
   content: print,
   expandIcon: "print"
  });
 
- view.ui.add(expand, "bottom-right");
+ view.ui.add(expandP, "bottom-right");
 
  // 6. Handle LayerList Action Events
  // layerList.on("trigger-action", (event) => {
