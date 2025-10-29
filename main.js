@@ -43,7 +43,7 @@ require([
  const USALayer0 = new FeatureLayer({
   url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0",
   title: "US Sample Data Cities",
-  visible: false
+  visible: true
  });
  const USALayer1 = new FeatureLayer({
   url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/1",
@@ -53,7 +53,7 @@ require([
  const USALayer2 = new FeatureLayer({
   url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2",
   title: "US Sample Data States",
-  visible: false
+  visible: true
  });
  const USALayer3 = new FeatureLayer({
   url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/3",
@@ -71,17 +71,17 @@ require([
  const censusLayer1 = new FeatureLayer({
   url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer1",
   title: "US Sample Census Block Group",
-  visible: false,
+  visible: true,
  });
  const censusLayer2 = new FeatureLayer({
   url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer2",
   title: "US Sample Census Counties",
-  visible: false,
+  visible: true,
  });
  const censusLayer3 = new FeatureLayer({
   url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer3",
   title: "US Sample Census States",
-  visible: false,
+  visible: true,
  });
 
 
@@ -93,6 +93,7 @@ require([
   layers: [USALayer0,USALayer1,USALayer2,USALayer3],
   //opacity: 0.75,
  });
+
  const demographicGroupLayer2 = new GroupLayer({
   title: "US Demographics 2",
   visible: true,
@@ -110,7 +111,9 @@ require([
  // 2. Initialize Map and MapView Widget
  const map = new Map({
   basemap: "gray-vector",
-  layers: [demographicGroupLayer1,demographicGroupLayer2],
+  layers: [
+    demographicGroupLayer1
+  ],
  });
 
  const view = new MapView({
