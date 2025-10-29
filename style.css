@@ -1,78 +1,83 @@
 html,
-body,
-#viewDiv { 
+body {
   padding: 0;
   margin: 0;
   height: 100%;
-  /*width: 100%;
-   top: 0px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  position: relative;*/
-  overflow-x: auto;
-  overflow-y: auto;
+  width: 100%;
+  overflow: hidden; /* Prevent scrolling on the body */
 }
 
-#viewDiv {
-    position: relative;
-    width: 100%;
-    height: 81vh;
+#app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
-
-#logoimg {
-    width: 4em;
-    height: auto;
-}
-
-#logoDiv {
-    padding: 5px;
-    background-color: white;
-    /*color: pink;*/
-    text-align: center;
-    width: 69px;
-    margin-top: 0px;
-    height: auto;
-    padding-bottom: 1px;
-}
-
 
 #header {
-    height: 19vh;
+  flex-shrink: 0; /* Prevent header from shrinking */
+  height: 19vh;
+  overflow: hidden; /* Hide overflow content */
 }
 
 #imgofheader {
-    height: initial;
-    width: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the header area */
+}
+
+#viewDiv {
+  flex-grow: 1; /* Allow map to take remaining space */
+  position: relative;
+}
+
+#logoDiv {
+  padding: 5px;
+  background-color: white;
+  text-align: center;
+  width: auto; /* Adjust width automatically */
+  max-width: 69px; /* Set a max-width */
+  height: auto;
+  padding-bottom: 1px;
+}
+
+#logoimg {
+  max-width: 100%;
+  height: auto;
 }
 
 /* Custom styles for the actions panel in the LayerList to ensure clean layout */
 .esri-layer-list__panel-content .calcite-label {
-padding: 8px;
+  padding: 8px;
 }
 .esri-layer-list__item-actions {
-padding: 4px 8px;
+  padding: 4px 8px;
 }
 
 #screenshotDiv {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.8);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 1000; /* Ensure it's on top */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .hide {
-  display: none;
+  display: none !important;
 }
 
 #imgOfSS {
   border: 10px solid white;
   box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.5);
-  
-  
+  max-width: 80vw; /* Responsive width */
+  max-height: 60vh; /* Responsive height */
+  object-fit: contain; /* Ensure the whole image is visible */
 }
 
 #screenshotDiv > * {
@@ -101,4 +106,42 @@ padding: 4px 8px;
   position: absolute;
   background: rgba(255, 51, 0, 0.1);
   border: 2px dashed rgb(255, 51, 0);
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+  #header {
+    height: 15vh; /* Reduce header height on smaller screens */
+  }
+
+  .esri-ui-top-right {
+    flex-direction: column; /* Stack widgets vertically */
+  }
+
+  .esri-ui-bottom-left .esri-widget {
+    margin-bottom: 10px; /* Add space between widgets */
+  }
+}
+
+@media (max-width: 480px) {
+  #header {
+    height: 12vh; /* Further reduce header height */
+  }
+
+  #logoDiv {
+    max-width: 50px; /* Adjust logo size */
+  }
+
+  .esri-ui .esri-widget {
+    font-size: 0.9em; /* Adjust widget font size */
+  }
+
+  #screenshotDiv {
+    padding: 10px;
+  }
+
+  #imgOfSS {
+    max-width: 90vw;
+    max-height: 50vh;
+  }
 }
