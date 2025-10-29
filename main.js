@@ -406,8 +406,6 @@ require([
         screenshotDiv.classList.remove("hide");
         // add the screenshot dataUrl as the src of an image element
         const screenshotImage = document.getElementsByClassName("js-screenshot-image")[0];
-        screenshotImage.width = screenshot.data.width * 0.2;
-        screenshotImage.height = screenshot.data.height * 0.2;
         screenshotImage.src = screenshot.dataUrl;
       }
 
