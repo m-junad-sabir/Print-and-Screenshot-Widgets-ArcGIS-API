@@ -13,7 +13,10 @@ require([
  "esri/widgets/ScaleBar",
  "esri/widgets/Compass",
  "esri/Basemap",
- "esri/widgets/BasemapGallery"
+ "esri/widgets/BasemapGallery",
+ "esri/widgets/Legend",
+  "esri/layers/support/LabelClass",
+  "esri/PopupTemplate"
 ], function(
  Map,
  MapView,
@@ -29,90 +32,150 @@ require([
  ScaleBar,
  Compass,
  Basemap,
- BasemapGallery
+ BasemapGallery,
+ Legend,
+ LabelClass,
+ PopupTemplate
 ) {
 
 
+  // Helper function to create a dynamic popup template
+  function createPopupTemplate(layer, fieldInfos) {
+    layer.popupTemplate = new PopupTemplate({
+      title: layer.title,
+      content: [{
+        type: "fields",
+        fieldInfos: fieldInfos
+      }]
+    });
+  }
 
+   // 3. Define Helper Functions for LayerList
+  function createOpacitySliderPanel(item) {
+   const label = document.createElement("calcite-label");
+   label.innerText = "Opacity";
+   label.scale = "s";
 
+   const slider = document.createElement("calcite-slider");
+   slider.labelHandles = true;
+   slider.labelTicks = true;
+   slider.min = 0;
+   slider.minLabel = "0";
+   slider.max = 1;
+   slider.maxLabel = "1";
+   slider.scale = "s";
+   slider.step = 0.01;
+   slider.value = item.layer.opacity || 1; 
 
+   slider.addEventListener("calciteSliderChange", () => {
+    item.layer.opacity = parseFloat(slider.value);
+   });
 
+   label.appendChild(slider);
+   return label;
+  }
+  
+  // A function that executes each time a ListItem is created for a layer.
+  function setLayerListActions(event) {
+   const item = event.item;
+   const layer = item.layer;
 
- // 1. Define Map Layers
- // Create layer showing sample data for the United States.
- const USALayer0 = new FeatureLayer({
-  url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0",
-  title: "US Sample Data Cities",
-  visible: true
- });
- const USALayer1 = new FeatureLayer({
-  url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/1",
-  title: "US Sample Data Highways",
-  visible: true
- });
- const USALayer2 = new FeatureLayer({
-  url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2",
-  title: "US Sample Data States",
-  visible: true
- });
- const USALayer3 = new FeatureLayer({
-  url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/3",
-  title: "US Sample Data Counties",
-  visible: false
- });
+   // A. Add custom ActionButtons to the FeatureLayers to control panels
+   if (item.layer.type === "feature") {
 
- // ~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
- // Create layer showing sample census data for the United States.
- const censusLayer0 = new FeatureLayer({
-  url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer0",
-  title: "US Sample Census Block Points",
-  visible: true,
- });
- const censusLayer1 = new FeatureLayer({
-  url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer1",
-  title: "US Sample Census Block Group",
-  visible: true,
- });
- const censusLayer2 = new FeatureLayer({
-  url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer2",
-  title: "US Sample Census Counties",
-  visible: true,
- });
- const censusLayer3 = new FeatureLayer({
-  url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer3",
-  title: "US Sample Census States",
-  visible: true,
- });
+    item.actionsSections = new Collection([
+     new Collection([
+      new ActionButton({
+       title: "Toggle legend",
+       icon: "legend",
+       id: "toggle-legend",
+      }),
+      new ActionButton({
+        title: "Change layer opacity",
+        icon: "sliders-horizontal",
+        id: "toggle-opacity-slider"
+      })
+     ]),
+    ]);
 
+   }
+
+   // For other layer types that are not group layers, show the legend panel by default.
+   // Feature layer panels are handled by the actions above.
+    if (item.layer.type !== "group" && item.layer.type !== "feature") {
+      item.panel = {
+        content: "legend",
+        open: true,
+      };
+    }
+  }
 
  // Create GroupLayer with exclusive visibility mode
- const demographicGroupLayer1 = new GroupLayer({
-  title: "US Demographics 1",
+ const demographicGroupLayer = new GroupLayer({
+  title: "US Demographics Data",
   visible: true,
-  //visibilityMode: "exclusive",
-  layers: [USALayer0,USALayer1,USALayer2,USALayer3],
-  //opacity: 0.75,
+  layers: [
+    new FeatureLayer({
+    url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0",
+    title: "US Cities",
+    visible: true
+    }),
+    new FeatureLayer({
+      url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/1",
+      title: "US Highways",
+      visible: true
+    }),
+    new FeatureLayer({
+      url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2",
+      title: "US States",
+      visible: true
+    }),
+    new FeatureLayer({
+      url: "http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/3",
+      title: "US Counties",
+      visible: false
+    })
+  ]
  });
 
- const demographicGroupLayer2 = new GroupLayer({
-  title: "US Demographics 2",
-  visible: true,
-  //visibilityMode: "exclusive",
-  layers: [censusLayer0, censusLayer1, censusLayer2, censusLayer3],
-  //opacity: 0.75,
- });
-
-
-
-
-
-
+ // ~~~~~~~~~~~ DEFINE POP-UP TEMPLATES ~~~~~~~~~~~~~~~~
+  createPopupTemplate(demographicGroupLayer.layers.getItemAt(0), [
+    { fieldName: "AREANAME", label: "City" },
+    { fieldName: "CLASS", label: "Class" },
+    { fieldName: "ST", label: "State" },
+    { fieldName: "CAPITAL", label: "Capital" },
+    { fieldName: "POP2000", label: "Population" }
+  ]);
+  createPopupTemplate(demographicGroupLayer.layers.getItemAt(1), [
+    { fieldName: "ROUTE", label: "Route" },
+    { fieldName: "TYPE", label: "Type" },
+    { fieldName: "LENGTH", label: "Length" },
+    { fieldName: "TOLL_RD", label: "Toll Road" },
+    { fieldName: "RTE_NUM1", label: "RTE NO 1" },
+    { fieldName: "RTE_NUM2", label: "RTE NO 2" },
+    { fieldName: "ADMN_CLASS", label: "ADMIN CLASS" }
+  ]);
+  createPopupTemplate(demographicGroupLayer.layers.getItemAt(2), [
+    { fieldName: "STATE_NAME", label: "State" },
+    { fieldName: "SUB_REGION", label: "Sub-Region" },
+    { fieldName: "area", label: "Area" },
+    { fieldName: "POP2000", label: "Population" },
+    { fieldName: "POP00_SQMI", label: "Population Density" },
+    { fieldName: "STATE_ABBR", label: "State Abbreviation" }
+  ]);
+  createPopupTemplate(demographicGroupLayer.layers.getItemAt(3), [
+    { fieldName: "NAME", label: "Name" },
+    { fieldName: "STATE_NAME", label: "State" },
+    { fieldName: "area", label: "Area" },
+    { fieldName: "POP2000", label: "Population" },
+    { fieldName: "POP00_SQMI", label: "Population Density" }
+  ]);
 
  // 2. Initialize Map and MapView Widget
  const map = new Map({
   basemap: "gray-vector",
   layers: [
-    demographicGroupLayer1
+    demographicGroupLayer
   ],
  });
 
@@ -156,105 +219,22 @@ require([
  view.ui.empty("bottom-left");
  view.ui.add(screenshotBtn, "bottom-left");
 
- // 3. Define Helper Functions for LayerList
- // function createOpacitySliderPanel(item) {
- //  const label = document.createElement("calcite-label");
- //  label.innerText = "Opacity";
- //  label.scale = "s";
-
- //  const slider = document.createElement("calcite-slider");
- //  slider.labelHandles = true;
- //  slider.labelTicks = true;
- //  slider.min = 0;
- //  slider.minLabel = "0";
- //  slider.max = 1;
- //  slider.maxLabel = "1";
- //  slider.scale = "s";
- //  slider.step = 0.01;
- //  slider.value = item.layer.opacity || 1; 
-
- //  slider.addEventListener("calciteSliderChange", () => {
- //   item.layer.opacity = parseFloat(slider.value);
- //  });
-
- //  label.appendChild(slider);
- //  return label;
- // }
-
 
  // 4. Configure LayerList Widget
  const layerList = new LayerList({
   view: view,
-  // --- FEATURE ENHANCEMENT START ---
-  // Explicitly enable the filter/search box
   visibleElements: {
    filter: true,
    heading: true,
    headingLevel: 3,
    collapseButton: true
   },
-  filterPlaceholder : "Filter layers"
-  
-  // The 'LayerList' Title and the Collapse button are included by default
-  // when the widget is added to the view.ui, provided a filter is active
-  // or the widget has other header elements.
-  // --- FEATURE ENHANCEMENT END ---
-  
-  // listItemCreatedFunction: (event) => {
-  //  const item = event.item;
-  //  const layer = item.layer;
-
-  //  // A. Add custom ActionButtons to the GroupLayer ("US Demographics")
-  //  if (item.title === "US Demographics") {
-
-  //   item.actionsSections = new Collection([
-  //    new Collection([ // First Group: Navigation/Information
-  //     new ActionButton({
-  //      title: "Go to full extent",
-  //      icon: "zoom-out-fixed",
-  //      id: "full-extent",
-  //     }),
-  //     new ActionButton({
-  //      title: "Layer information",
-  //      icon: "information",
-  //      id: "information",
-  //     }),
-  //    ]),
-  //    new Collection([ // Second Group: Opacity Control
-  //     new ActionButton({
-  //      title: "Increase opacity",
-  //      icon: "chevron-up",
-  //      id: "increase-opacity",
-  //     }),
-  //     new ActionButton({
-  //      title: "Decrease opacity",
-  //      icon: "chevron-down",
-  //      id: "decrease-opacity",
-  //     }),
-  //    ]),
-  //   ]);
-
-  //  }
-
-  //  // B. Add Opacity Panel to individual MapImageLayers
-  //  if (layer.type === "map-image") {
-  //   item.panel = {
-  //    content: createOpacitySliderPanel(item),
-  //    icon: "sliders-horizontal",
-  //    title: "Change layer opacity",
-  //   };
-  //  }
-
-  // },
-
+  filterPlaceholder : "Filter layers",
+  listItemCreatedFunction: setLayerListActions
  });
 
- // 5. Place Widgets on the View
-
- // Add the LayerList widget to the top-right corner of the map view
  view.ui.add(layerList, "top-left");
 
- // Add a Home button widget
  view.ui.add(new Home({ view: view }), "top-right");
 
  view.ui.move("zoom", "top-trailing");
@@ -263,10 +243,8 @@ require([
         view: view,
   });
 
- // Add the Compass widget to the top left corner of the view
  view.ui.add(compassWidget, "top-right");
 
- // Add the Print widget to the bottom-right corner of the map view
  const print = new Print({
   view: view,
   allowedFormats: ["png"],
@@ -278,40 +256,41 @@ require([
   content: print,
   expandIcon: "print"
  });
-
  view.ui.add(expandP, "bottom-right");
 
- // 6. Handle LayerList Action Events
- // layerList.on("trigger-action", (event) => {
- //  const visibleLayer = USALayer.visible ? USALayer : censusLayer;
- //  const { id } = event.action;
+ // Handle LayerList Action Events
+ layerList.on("trigger-action", (event) => {
+  const { id } = event.action;
+  const item = event.item;
 
- //  switch (id) {
- //   case "full-extent":
- //    view.goTo(visibleLayer.fullExtent).catch((error) => {
- //     if (error.name !== "AbortError") {
- //      console.error(error);
- //     }
- //    });
- //    break;
+  switch (id) {
+    case "toggle-legend":
+        // If panel is already a legend, remove it.
+        if (item.panel && item.panel.content === "legend") {
+            item.panel = null;
+        } else { // Otherwise, set panel to legend.
+            item.panel = {
+                content: "legend",
+                open: true
+            };
+        }
+        break;
 
- //   case "information":
- //    window.open(visibleLayer.url);
- //    break;
+    case "toggle-opacity-slider":
+        const isSliderPanel = item.panel && item.panel.content && item.panel.content.nodeName === 'CALCITE-LABEL';
+        // If panel is already a slider, remove it.
+        if (isSliderPanel) {
+            item.panel = null;
+        } else { // Otherwise, set panel to slider.
+            item.panel = {
+                content: createOpacitySliderPanel(item),
+                open: true
+            };
+        }
+        break;
+  }
 
- //   case "increase-opacity":
- //    if (demographicGroupLayer.opacity < 1) {
- //     demographicGroupLayer.opacity = Math.min(1, demographicGroupLayer.opacity + 0.25);
- //    }
- //    break;
-
- //   case "decrease-opacity":
- //    if (demographicGroupLayer.opacity > 0) {
- //     demographicGroupLayer.opacity = Math.max(0, demographicGroupLayer.opacity - 0.25);
- //    }
- //    break;
- //  }
- // });
+ });
 
   const scaleBar = new ScaleBar({
    view: view,
